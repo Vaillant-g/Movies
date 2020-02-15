@@ -14,7 +14,7 @@ const SEARCH_URL = "search/movie?language=fr&include_adult=false";
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = { movieList: {}, currentMovie: {} };
+    this.state = { movieList: {}, currentMovie: {}, recommendationList: {}};
   }
   UNSAFE_componentWillMount() {
     this.initMovies();
@@ -30,6 +30,7 @@ class App extends Component {
           },
           function() {
             this.applyVideoToCurrentMovie();
+            this.setRecommendations();
           }
         );
       }.bind(this)
@@ -59,43 +60,64 @@ class App extends Component {
   }
 
   setRecommendations() {
-    axios.get(`${API_END_POINT}movie/${this.state.currentMovie.id}/recommendations?&${API_KEY}&language=fr`).then(
-      function(response) {
-        this.setState(
-          {
-            movieList: response.data.results.slice(0, 5)
-          },
-        );
-      }.bind(this)
-    );
+    axios
+      .get(
+        `${API_END_POINT}movie/${this.state.currentMovie.id}/recommendations?&${API_KEY}&language=fr`
+      )
+      .then(
+        function(response) {
+          this.setState({
+            recommendationList: response.data.results.slice(0, 5)
+          });
+        }.bind(this)
+      );
   }
 
   onClickSearch(searchText) {
     if (searchText) {
       axios
         .get(`${API_END_POINT}${SEARCH_URL}&${API_KEY}&query=${searchText}`)
-        .then(function(response) {
-          if (response.data && response.data.results[0]) {
-            if (response.data.results[0].id != this.state.currentMovie.id) {
-              this.setState({ currentMovie: response.data.results[0] }, () => {
-                this.applyVideoToCurrentMovie();
-                this.setRecommendations();
-              });
+        .then(
+          function(response) {
+            if (response.data && response.data.results[0]) {
+              if (response.data.results[0].id != this.state.currentMovie.id) {
+                this.setState(
+                  { currentMovie: response.data.results[0] },
+                  () => {
+                    this.applyVideoToCurrentMovie();
+                    this.setRecommendations();
+                  }
+                );
+              }
             }
-          }
-        }.bind(this));
-    };
+          }.bind(this)
+        );
+    }
   }
 
   render() {
-    const renderVideoList = () => {
+    const renderVideoList = (type) => {
+      console.log(type);
+      if (type === "recommandations") {
+        if (this.state.recommendationList.length >= 5)
+        return (
+          <VideoList
+          titre={"Films recommandés"}
+            movieList={this.state.recommendationList}
+            callback={this.onClickListItem.bind(this)}
+          />
+        );
+      }
+      else { // Films populaires
       if (this.state.movieList.length >= 5)
         return (
           <VideoList
+          titre={"Films populaires"}
             movieList={this.state.movieList}
             callback={this.onClickListItem.bind(this)}
           />
         );
+      }
     };
 
     return (
@@ -104,14 +126,15 @@ class App extends Component {
           <SearchBar callback={this.onClickSearch.bind(this)} />
         </div>
         <div className="row">
-          <div className="col-md-8">
+          <div className="col-md-3">{renderVideoList("populaires")}</div>
+          <div className="col-md-6">
             <Video videoId={this.state.currentMovie.videoId}></Video>
             <VideoDetail
               title={this.state.currentMovie.title}
               description={this.state.currentMovie.overview}
             ></VideoDetail>
           </div>
-          <div className="col-md-4">{renderVideoList()}</div>
+          <div className="col-md-3">{renderVideoList("recommandations")}</div>
         </div>
       </div>
     );
