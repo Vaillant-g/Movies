@@ -14,7 +14,7 @@ const SEARCH_URL = "search/movie?language=fr&include_adult=false";
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = { movieList: {}, currentMovie: {}, recommendationList: {}};
+    this.state = { movieList: {}, currentMovie: {}, recommendationList: {}, backgroundColor: "#BFBFBF"};
   }
   UNSAFE_componentWillMount() {
     this.initMovies();
@@ -95,9 +95,14 @@ class App extends Component {
     }
   }
 
+  onClickMoon() {
+    console.log("moon");
+    let changeColor = (this.state.backgroundColor == "#262626" ? "#BFBFBF" : "#2626260");
+    this.setState({backgroundColor: changeColor});
+  }
+
   render() {
     const renderVideoList = (type) => {
-      console.log(type);
       if (type === "recommandations") {
         if (this.state.recommendationList.length >= 5)
         return (
@@ -121,7 +126,7 @@ class App extends Component {
     };
 
     return (
-      <div>
+      <div>NPM 
         <div className="search_bar">
           <SearchBar callback={this.onClickSearch.bind(this)} />
         </div>

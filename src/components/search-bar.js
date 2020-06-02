@@ -12,7 +12,7 @@ class SearchBar extends Component {
   render() {
     return (
       <div className="row">
-        <div className="col-lg-8 input-group">
+        <div className="col-lg-9 input-group">
           <input
             type="text"
 //            className="form-control input-lg"
@@ -24,6 +24,8 @@ className="form-control my-0 py-1 amber-border"
             <button className="input-group-text amber lighten-3" onClick={this.handleOnClick.bind(this)}> Go </button>
           </span>
         </div>
+        <button className="btn btn-dark" onClick={this.onClickMoon}><i class="fas fa-moon"></i></button>
+
       </div>
 
 

@@ -8,7 +8,19 @@ li:hover {
 }
 
 .title_list_item {
-    padding-top: 40px;
-    text-align: center;
+
+    text-align: left;
+
 }
 
+.movieList {
+    padding-left: 0;
+}
+
+.movieList > li {
+    border:none;
+}
+
+.movieList > li  h5 {
+    text-align: left;
+}
